@@ -19,6 +19,7 @@ final class DifferentialAction {
   const ACTION_ADDCCS         = 'add_ccs';
   const ACTION_CLAIM          = 'claim';
   const ACTION_REOPEN         = 'reopen';
+  const ACTION_APPROVE        = 'approve';
 
   public static function getActionPastTenseVerb($action) {
     $verbs = array(
@@ -39,6 +40,7 @@ final class DifferentialAction {
       self::ACTION_ADDCCS         => 'added CCs to',
       self::ACTION_CLAIM          => 'commandeered',
       self::ACTION_REOPEN         => 'reopened',
+      self::ACTION_APPROVE        => 'approved',
     );
 
     if (!empty($verbs[$action])) {
@@ -63,6 +65,7 @@ final class DifferentialAction {
       self::ACTION_CLOSE          => pht('Close Revision'),
       self::ACTION_CLAIM          => pht('Commandeer Revision'),
       self::ACTION_REOPEN         => pht('Reopen'),
+      self::ACTION_APPROVE        => pht('Looks good to me!'),
     );
 
     if (!empty($verbs[$action])) {

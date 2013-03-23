@@ -89,6 +89,7 @@ final class ConduitAPI_differential_getrevision_Method
       'testPlan' => $revision->getTestPlan(),
       'lineCount' => $revision->getLineCount(),
       'reviewerPHIDs' => $reviewer_phids,
+      'approvedBy' => $revision->loadApprovedBy();
       'diffs' => $diff_dicts,
       'commits' => $commit_dicts,
       'auxiliary' => $auxiliary_fields,

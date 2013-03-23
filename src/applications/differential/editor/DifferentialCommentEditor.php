@@ -209,6 +209,67 @@ final class DifferentialCommentEditor extends PhabricatorEditor {
         }
         break;
 
+      case DifferentialAction::ACTION_APPROVE:
+        $approved_by = $revision->loadApprovedBy();
+
+        if ($actor_is_author && !$allow_self_accept) {
+          throw new Exception('You can not approve your own revision.');
+        }
+
+        if (in_array($actor_phid, $approved_by)) {
+          throw new DifferentialActionHasNoEffectException(
+            "You have already approved this revision. Feel free ".
+            "to comment though.");
+        }
+
+        if (($revision_status !=
+             ArcanistDifferentialRevisionStatus::NEEDS_REVIEW) &&
+            ($revision_status !=
+             ArcanistDifferentialRevisionStatus::NEEDS_REVISION)) {
+
+          switch ($revision_status) {
+            case ArcanistDifferentialRevisionStatus::ACCEPTED:
+              throw new DifferentialActionHasNoEffectException(
+                "You can not approve this revision because it has been ".
+                "accepted already.");
+            case ArcanistDifferentialRevisionStatus::ABANDONED:
+              throw new DifferentialActionHasNoEffectException(
+                "You can not approve this revision because it has been ".
+                "abandoned.");
+            case ArcanistDifferentialRevisionStatus::CLOSED:
+              throw new DifferentialActionHasNoEffectException(
+                "You can not approve this revision because it has already ".
+                "been closed.");
+            default:
+              throw new Exception(
+                "Unexpected revision state '{$revision_status}'!");
+          }
+        }
+
+        /*
+        // If the necessary owners have accepted the revision, accept it
+        $accept_revision = true;
+        // TODO (kevin) implement getFiles() and getOwners()
+        foreach ($revision->getFiles() as $file) {
+          if (!array_intersect($revision->getOwners($file), $approved_by)){
+            $accept_revision = false;
+          }
+        }
+        if ($accept_revision) {
+          $revision
+            ->setStatus(ArcanistDifferentialRevisionStatus::ACCEPTED);
+        } */
+
+        if (!isset($reviewer_phids[$actor_phid])) {
+          DifferentialRevisionEditor::alterReviewers(
+            $revision,
+            $reviewer_phids,
+            $rem = array(),
+            $add = array($actor_phid),
+            $actor_phid);
+        }
+        break;
+
       case DifferentialAction::ACTION_REQUEST:
         if (!$actor_is_author) {
           throw new Exception('You must own a revision to request review.');

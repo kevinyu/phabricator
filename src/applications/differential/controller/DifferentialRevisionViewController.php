@@ -560,8 +560,11 @@ final class DifferentialRevisionViewController extends DifferentialController {
     $viewer_is_owner = ($viewer_phid == $revision->getAuthorPHID());
     $viewer_is_reviewer = in_array($viewer_phid, $revision->getReviewers());
     $viewer_did_accept = ($viewer_phid === $revision->loadReviewedBy());
+    $viewer_did_approve = in_array($viewer_phid, $revision->loadApprovedBy());
     $status = $revision->getStatus();
 
+    $allow_manual_accept = PhabricatorEnv::getEnvConfig(
+      'differential.allow-manual-accept');
     $allow_self_accept = PhabricatorEnv::getEnvConfig(
       'differential.allow-self-accept');
     $always_allow_close = PhabricatorEnv::getEnvConfig(
@@ -596,12 +599,13 @@ final class DifferentialRevisionViewController extends DifferentialController {
     } else {
       switch ($status) {
         case ArcanistDifferentialRevisionStatus::NEEDS_REVIEW:
-          $actions[DifferentialAction::ACTION_ACCEPT] = true;
+          $actions[DifferentialAction::ACTION_ACCEPT] = $allow_manual_accept;
           $actions[DifferentialAction::ACTION_REJECT] = true;
           $actions[DifferentialAction::ACTION_RESIGN] = $viewer_is_reviewer;
+          $actions[DifferentialAction::ACTION_APPROVE] = !$viewer_did_approve;
           break;
         case ArcanistDifferentialRevisionStatus::NEEDS_REVISION:
-          $actions[DifferentialAction::ACTION_ACCEPT] = true;
+          $actions[DifferentialAction::ACTION_ACCEPT] = $allow_manual_accept;
           $actions[DifferentialAction::ACTION_RESIGN] = $viewer_is_reviewer;
           break;
         case ArcanistDifferentialRevisionStatus::ACCEPTED:

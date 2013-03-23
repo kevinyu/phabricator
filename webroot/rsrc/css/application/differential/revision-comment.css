@@ -101,3 +101,7 @@
 .phabricator-transaction-view .differential-comment-action-claim {
   border-color:     #ffdd33;
 }
+
+.phabricator-transaction-view .differential-comment-action-approve {
+  border-color:     #affa00;
+}

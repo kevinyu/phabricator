@@ -913,6 +913,14 @@ final class DifferentialRevisionQuery {
     foreach ($revisions as $revision) {
       $needs_review = ($revision->getStatus() == $status_review);
       $filter_is_author = in_array($revision->getAuthorPHID(), $user_phids);
+
+      $approved_by = $revision->loadApprovedBy();
+      foreach ($user_phids as $user_phid) {
+        if (in_array($user_phid, $approved_by)){
+          $needs_review = false;
+        }
+      }
+
       if (!$revision->getReviewers()) {
         $needs_review = false;
       }

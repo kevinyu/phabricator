@@ -300,6 +300,36 @@ final class DifferentialRevision extends DifferentialDAO
     return $reviewer;
   }
 
+  public function loadApprovedBy() {
+    $enable_veto = PhabricatorEnv::getEnvConfig(
+      'differential.enable-veto');
+    $approved_by = array();
+    $comments = $this->loadComments();
+    foreach (array_reverse($comments) as $comment) {
+      switch ($comment->getAction()) {
+        case DifferentialAction::ACTION_APPROVE:
+          $approved_by[] = $comment->getAuthorPHID();
+        case DifferentialAction::ACTION_UPDATE:
+          // TODO (kevin): make sure this works
+          $active_diff = $this->loadActiveDiff();
+          $diff_id = idx(
+            $comment->getMetadata(),
+            DifferentialComment::METADATA_DIFF_ID);
+          $diff = id(new DifferentialDiff())->load($diff_id);
+          if (!$diff->equalDiffChanges($active_diff)) {
+            break
+          }
+        case DifferentialAction::ACTION_REJECT:
+        case DifferentialAction::ACTION_RETHINK:
+          if ($enable_veto) {
+            break
+          }
+      }
+    }
+
+    return $approved_by
+  }
+
   public function getHashes() {
     if ($this->hashes === null) {
       throw new Exception("Call attachHashes() before getHashes()!");

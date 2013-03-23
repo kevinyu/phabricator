@@ -253,4 +253,10 @@ final class DifferentialDiff extends DifferentialDAO {
     return $dict;
   }
 
+  public function equalDiffChanges(DifferentialDiff $other_diff) {
+    $changes = $this->getDiffDict()['changes'];
+    $other_diff_changes = $other_diff->getDiffDict()['changes'];
+    return ($changes == $other_diff_changes);
+  }
+
 }

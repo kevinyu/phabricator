@@ -149,6 +149,33 @@ final class PhabricatorDifferentialConfigOptions
             "a behavior you want, but it proves useful if you are working ".
             "alone on a project and want to make use of all of ".
             "differential's features.")),
+      $this->newOption('differential.allow-manual-accept', 'bool', true)
+        ->setBoolOptions(
+          array(
+            pht("Allow manual-accept"),
+            pht("Disallow manual-accept"),
+          ))
+        ->setSummary(pht("Allows users to manually accept a revision."))
+        ->setDescription(
+          pht(
+            "If you set this to true, users can manually accept revisions.  ".
+            "This action is true in pureblood Differential but should be ".
+            "turned to false if you are using an external source control ".
+            "tool set up to automatically accept revisions.")),
+      $this->newOption('differential.enable-veto', 'bool', true)
+        ->setBoolOptions(
+          array(
+            pht("Enable revision veto."),
+            pht("Disable revision veto."),
+          ))
+        ->setSummary(pht("Enable Change Requests to veto previous approvals."))
+        ->setDescription(
+          pht(
+            "If you set this to true, change requests cancel out approvals.  ".
+            "This is a setting that only applies if the Approval system ".
+            "is in place, which allows a change request (Request Changes or ".
+            "Plan Changes) to overwrite the effects of Approvals ".
+            "that came before it, forcing re-review.")),
       $this->newOption('differential.always-allow-close', 'bool', false)
         ->setBoolOptions(
           array(

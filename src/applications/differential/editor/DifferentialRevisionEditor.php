@@ -687,6 +687,9 @@ final class DifferentialRevisionEditor extends PhabricatorEditor {
       ->setAuthorPHID($this->getActorPHID())
       ->setRevisionID($revision_id)
       ->setContent($this->getComments())
+      // TODO (kevin): perhaps this is where to check the diffs...
+      // If there are no changes, then set the action to be a new
+      // action... DifferentialAction::ACTION_REBASE_UPDATE
       ->setAction(DifferentialAction::ACTION_UPDATE)
       ->setMetadata(
         array(
